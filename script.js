@@ -57,12 +57,38 @@ function Gameboard() {
 	//{player} win
 	//0 contitune
 	const checkWinner = (row, col, player) => {
+		//check row
 		for(let i = 0; i < 3 ; i++){
 			if(board[row][i].getValue()!==player.mark)
 				break;
 			if(i===2)
 				return player;
 		}
+		
+		//check col
+		for(let i = 0; i < 3 ; i++){
+			if(board[i][col].getValue()!==player.mark)
+				break;
+			if(i===2)
+				return player;
+		}
+
+		//check Diagonal
+		for(let i = 0; i<3; i++){
+			if(board[i][i].getValue()!==player.mark)
+				break;
+			if(i==2)
+				return player
+		}
+
+		//check anti Diagnonal
+		for(let i = 0; i<3; i++){
+			if(board[i][2-i].getValue()!==player.mark)
+				break;
+			if(i==2)
+				return player
+		}
+
 		return 0;
 	};
 
