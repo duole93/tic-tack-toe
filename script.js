@@ -11,7 +11,7 @@ function Gameboard() {
 
 	const resetBoard = ()=>{
 		for (let i = 0; i < 3; i++) {
-			for (let j = 0; j < 3; j++) board[i][j] = Cell().setMark(0);
+			for (let j = 0; j < 3; j++) board[i][j].setMark(0);
 		}
 	}
 
@@ -145,9 +145,11 @@ const GameHandler = (function () {
 	const getCurrentBoard = () => {
 		board.getConsoleBoard();
 	};
+	const resetGame= ()=>{board.resetBoard()};
 	return {
 		currentTurn,
 		getCurrentPlayer,
 		getCurrentBoard,
+		resetGame
 	};
 })();
