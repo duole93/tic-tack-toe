@@ -3,16 +3,23 @@ function Gameboard() {
 	const board = [];
 	let remainMoves = 9;
 
-    //Create Empty Board
+	//Create Empty Board
 	for (let i = 0; i < 3; i++) {
 		board[i] = [];
 		for (let j = 0; j < 3; j++) board[i][j] = Cell();
 	}
+
+	const resetBoard = ()=>{
+		for (let i = 0; i < 3; i++) {
+			for (let j = 0; j < 3; j++) board[i][j] = Cell().setMark(0);
+		}
+	}
+
 	const getBoard = () => {
 		return board;
 	};
 
-    //DEBUGING Print Board in console
+	//DEBUGING Print Board in console
 	const getConsoleBoard = () => {
 		const temp = [];
 		for (let i = 0; i < 3; i++) {
@@ -25,28 +32,41 @@ function Gameboard() {
 		console.log("board ", temp);
 	};
 
-    //add a Mark on Board
-    //return    1: valid move
-    //          -1: invalid move
-    //          0: board Empty
+	//add a Mark on Board
+	//return    1: valid move
+	//          -1: invalid move
+	//          0: board Empty
 	const placeMark = (row, column, player) => {
 		//check valid move
 		if (remainMoves > 0)
 			if (board[row][column].getValue() === 0) {
 				remainMoves--;
 				board[row][column].setMark(player.mark);
-                return 1;
+				return 1;
 			} else {
-                return -1;
+				return -1;
 				//console.log("board.placeMark(): invalid move");
 			}
 		else {
-            //console.log("board.placeMark(): Board is full");
-            return 0;
-        }
+			//console.log("board.placeMark(): Board is full");
+			return 0;
+		}
 	};
 
-	return { getBoard, getConsoleBoard, placeMark };
+	//return
+	//{player} win
+	//0 contitune
+	const checkWinner = (row, col, player) => {
+		for(let i = 0; i < 3 ; i++){
+			if(board[row][i].getValue()!==player.mark)
+				break;
+			if(i===2)
+				return player;
+		}
+		return 0;
+	};
+
+	return { getBoard, getConsoleBoard, placeMark, checkWinner, resetBoard };
 }
 
 //cell is a unit of a board.
@@ -61,7 +81,7 @@ function Cell() {
 
 //game control
 const GameHandler = (function () {
-	const newBoard = Gameboard();
+	const board = Gameboard();
 	const player1 = { no: 1, mark: 1 };
 	const player2 = { no: 2, mark: 2 };
 	let currentPlayer = player1;
@@ -69,33 +89,35 @@ const GameHandler = (function () {
 		currentPlayer = currentPlayer === player1 ? player2 : player1;
 	};
 	const currentTurn = (row, col) => {
-		let isValid = newBoard.placeMark(row, col, currentPlayer);
-		//
-		// Check winning
-		//
+		let isValid = board.placeMark(row, col, currentPlayer);
 
-        //switchPlayer ONLY when making valid move
-        switch (isValid){
-            case 1: 
-                console.log(
+		//switchPlayer ONLY when making valid move
+		switch (isValid) {
+			case 1:
+				console.log(
 					`board.placeMark(): Player ${currentPlayer.no} placed a mark at ${row}, ${col}`
 				);
-                switchPlayer();
-                break;
-            case 0:
-                console.log('GameHandler.currenturn(): Board is full');
-                break
-            case -1:
-                console.log(`GameHandler.currenturn(): Player ${currentPlayer.no} placed an invalid move`);
-                break
-        }
-		
+				if (board.checkWinner(row, col, currentPlayer) === currentPlayer) {
+					console.log('Win :>> player no.', currentPlayer.no);
+					break;
+				}
 
+				switchPlayer();
+				break;
+			case 0:
+				console.log("GameHandler.currenturn(): Board is full");
+				break;
+			case -1:
+				console.log(
+					`GameHandler.currenturn(): Player ${currentPlayer.no} placed an invalid move`
+				);
+				break;
+		}
 	};
 
 	const getCurrentPlayer = () => currentPlayer;
 	const getCurrentBoard = () => {
-		newBoard.getConsoleBoard();
+		board.getConsoleBoard();
 	};
 	return {
 		currentTurn,
