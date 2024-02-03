@@ -13,7 +13,7 @@ function Gameboard() {
 		for (let i = 0; i < 3; i++) {
 			for (let j = 0; j < 3; j++) board[i][j].setMark(0);
 		}
-		remainMoves=9;
+		remainMoves = 9;
 	};
 
 	const getBoard = () => {
@@ -38,16 +38,16 @@ function Gameboard() {
 	};
 
 	//add a Mark on Board
-	//return    1: valid move
+	//return    remainmove: valid move
 	//          -1: invalid move
-	//          0: board Empty
+	//          0: board full
 	const placeMark = (row, column, player) => {
 		//check valid move
 		if (remainMoves > 0)
 			if (board[row][column].getValue() === 0) {
 				remainMoves--;
 				board[row][column].setMark(player.mark);
-				return 1;
+				return remainMoves;
 			} else {
 				return -1;
 				//console.log("board.placeMark(): invalid move");
@@ -115,33 +115,47 @@ const GameHandler = function () {
 	const player1 = { no: 1, mark: 1 };
 	const player2 = { no: 2, mark: 2 };
 	let currentPlayer = player1;
+	let winner = 0;
+	let remainMoves=9;
 	const switchPlayer = () => {
 		currentPlayer = currentPlayer === player1 ? player2 : player1;
 	};
+
+	//return game status
+	//player=winner
+	//1= continue
+	//0= board is full
+	//TODO: there is a redunancy with winner and remain moves
 	const currentTurn = (row, col) => {
-		let isValid = board.placeMark(row, col, currentPlayer);
+		//enable move if there is no winner and still have move left
+		if (winner === 0 && remainMoves) 
+		{
+			remainMoves = board.placeMark(row, col, currentPlayer);
 
-		//switchPlayer ONLY when making valid move
-		switch (isValid) {
-			case 1:
-				console.log(
-					`board.placeMark(): Player ${currentPlayer.no} placed a mark at ${row}, ${col}`
-				);
-				if (board.checkWinner(row, col, currentPlayer) === currentPlayer) {
-					console.log("Win :>> player no.", currentPlayer.no);
+			//switchPlayer ONLY when making valid move
+			switch (remainMoves) {
+				default:
+					console.log(
+						`board.placeMark(): Player ${currentPlayer.no} placed a mark at ${row}, ${col}`
+					);
+					if (board.checkWinner(row, col, currentPlayer) === currentPlayer) {
+						console.log("Win :>> player no.", currentPlayer.no);
+						winner = currentPlayer;
+						return winner;
+					}
+
+					switchPlayer();
+					return remainMoves;
+				case -1:
+					console.log(
+						`GameHandler.currenturn(): Player ${currentPlayer.no} placed an invalid move`
+					);
 					break;
-				}
-
-				switchPlayer();
-				break;
-			case 0:
-				console.log("GameHandler.currenturn(): Board is full");
-				break;
-			case -1:
-				console.log(
-					`GameHandler.currenturn(): Player ${currentPlayer.no} placed an invalid move`
-				);
-				break;
+			}
+		}
+		else{
+			console.log("Game Over");
+			return winner;
 		}
 	};
 
@@ -151,7 +165,10 @@ const GameHandler = function () {
 	};
 	const resetGame = () => {
 		board.resetBoard();
-		currentPlayer=player1;
+		currentPlayer = player1;
+		winner = 0;
+		remainMoves=9;
+
 	};
 	return {
 		currentTurn,
@@ -170,7 +187,9 @@ const GameRender = (() => {
 	const currentPlayerContainer = document.querySelector(".current-player");
 	const restartButton = document.querySelector("button");
 
-	currentPlayerContainer.innerText = currentPlayer.no;
+	const endgameModal = document.querySelector(".end-game-modal");
+	const endgameResult = document.querySelector(".end-game-modal h1")
+	currentPlayerContainer.innerText = currentPlayer.no + " turn";
 
 	//Cell Element Object Factory Function
 	const CellElement = (row, col) => {
@@ -178,10 +197,17 @@ const GameRender = (() => {
 		element.classList.add(`cell-${row}-${col}`);
 		element.innerText = 0;
 		element.addEventListener("click", () => {
-			game.currentTurn(row, col, currentPlayer);
-			console.log(game.getCurrentBoard());
-
+			let gameState = game.currentTurn(row, col, currentPlayer);
+			console.log('gameState :>> ', gameState);
 			UpdateCell(row, col);
+			if(gameState===currentPlayer){
+				endgameResult.innerText = `Player ${currentPlayer.no} Win`;
+				endgameModal.showModal();
+			}
+			else if (gameState===0){
+				endgameResult.innerText = `Player ${currentPlayer.no} Win`;
+				endgameModal.showModal();
+			}
 		});
 		return {
 			element,
@@ -190,7 +216,8 @@ const GameRender = (() => {
 
 	//Initial a board
 	for (let i = 0; i < 3; i++) {
-		for (let j = 0; j < 3; j++) boardContainer.append(CellElement(i, j).element);
+		for (let j = 0; j < 3; j++)
+			boardContainer.append(CellElement(i, j).element);
 	}
 
 	//reset game
@@ -203,11 +230,8 @@ const GameRender = (() => {
 		currentPlayerContainer.innerText = currentPlayer.no;
 		console.log(game.getCurrentBoard());
 	});
-	
-	
 
-
-
+	//update a cell when place mark
 	const UpdateCell = (row, col) => {
 		currentPlayer = game.getCurrentPlayer();
 		const markedElement = document.querySelector(`.cell-${row}-${col}`);
