@@ -180,16 +180,43 @@ const GameHandler = function () {
 
 //Display Game
 const GameRender = (() => {
+
+	
+
+
 	const game = GameHandler();
 	let currentPlayer = game.getCurrentPlayer();
-
+	
+	const mainSection = document.querySelector(".main");
 	const boardContainer = document.querySelector(".board");
 	const currentPlayerContainer = document.querySelector(".current-player");
 	const restartButton = document.querySelector("button");
 
+	const gamestartModal = document.querySelector(".game-start-modal");
+	const startBtn = document.querySelector(".start-btn");
 	const endgameModal = document.querySelector(".end-game-modal");
 	const endgameResult = document.querySelector(".end-game-modal h1")
+	const endgameRestartBtn = endgameModal.querySelector(".restart-btn");
+	const endgameQuitBtn = endgameModal.querySelector(".quit-btn");
 	currentPlayerContainer.innerText = currentPlayer.no + " turn";
+
+	//start game btn
+	startBtn.addEventListener("click", ()=>{
+		createNewGame();
+		mainSection.classList.remove("hidden")
+		gamestartModal.close();
+	}); 
+	endgameRestartBtn.addEventListener("click", ()=>{
+		createNewGame();
+		endgameModal.close();
+	})  
+	endgameQuitBtn.addEventListener("click", ()=>{
+		endgameModal.close();
+		mainSection.classList.add("hidden");
+		gamestartModal.showModal();
+	})   
+
+
 
 	//Cell Element Object Factory Function
 	const CellElement = (row, col) => {
@@ -202,11 +229,11 @@ const GameRender = (() => {
 			UpdateCell(row, col);
 			if(gameState===currentPlayer){
 				endgameResult.innerText = `Player ${currentPlayer.no} Win`;
-				endgameModal.showModal();
+				setTimeout(()=>{endgameModal.showModal()}, 1500);
 			}
 			else if (gameState===0){
-				endgameResult.innerText = `Player ${currentPlayer.no} Win`;
-				endgameModal.showModal();
+				endgameResult.innerText = `Tie`;
+				setTimeout(()=>{endgameModal.showModal()}, 1500);
 			}
 		});
 		return {
@@ -222,13 +249,7 @@ const GameRender = (() => {
 
 	//reset game
 	restartButton.addEventListener("click", () => {
-		game.resetGame();
-		currentPlayer = game.getCurrentPlayer();
-		document.querySelectorAll(".board div").forEach((item) => {
-			item.innerHTML = 0;
-		});
-		currentPlayerContainer.innerText = currentPlayer.no;
-		console.log(game.getCurrentBoard());
+		createNewGame();
 	});
 
 	//update a cell when place mark
@@ -238,4 +259,15 @@ const GameRender = (() => {
 		currentPlayerContainer.innerText = currentPlayer.no;
 		markedElement.innerHTML = game.getCurrentBoard().getCellValue(row, col);
 	};
+
+	const createNewGame = ()=>{
+		game.resetGame();
+		currentPlayer = game.getCurrentPlayer();
+		document.querySelectorAll(".board div").forEach((item) => {
+			item.innerHTML = 0;
+		});
+		currentPlayerContainer.innerText = currentPlayer.no;
+		console.log(game.getCurrentBoard());
+	}
+
 })();

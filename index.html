@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,28 +8,31 @@
     <script src="script.js" defer></script>
     <title>Tic Tac Toe</title>
 </head>
+
 <body>
-    <div class="header">
-        <h1>Tick Tac Toe</h1>
-    </div>
-    <div class="board-container">
-        <div class="current-player">
-            <div class="player"></div>
+    <section class="main hidden">
+        <div class="header">
+            <h1>Tick Tac Toe</h1>
         </div>
-        <div class="board">
-            
+        <div class="board-container">
+            <div class="current-player">
+                <div class="player"></div>
+            </div>
+            <div class="board">
+
+            </div>
         </div>
-    </div>
-    <div><button class="restart">Restart</button></div> 
-    <dialog class="game-start-modal">
-        <h1>Pick your mark</h1>
-        <button>X</button>
-        <button>O</button>
-    </dialog>     
+        <div><button class="restart">Restart</button></div>
+    </section>
+    <dialog class="game-start-modal" open>
+        <h1>The OX Project</h1>
+        <button class="start-btn">New Game</button>
+    </dialog>
     <dialog class="end-game-modal">
         <h1></h1>
-        <button class="restart">Restart</button>
-        <button>Quit</button>
+        <button class="restart-btn">Restart</button>
+        <button class="quit-btn">Quit</button>
     </dialog>
 </body>
+
 </html>
