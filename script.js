@@ -112,8 +112,8 @@ function Cell() {
 //game control
 const GameHandler = function () {
 	const board = Gameboard();
-	const player1 = { no: 1, mark: 'X' };
-	const player2 = { no: 2, mark: 'O' };
+	const player1 = { no: 1, mark: 'X', color: "white" };
+	const player2 = { no: 2, mark: 'O', color: "white" };
 	let currentPlayer = player1;
 	let winner = 0;
 	let remainMoves=9;
@@ -228,7 +228,7 @@ const GameRender = (() => {
 			UpdateCell(row, col);
 
 			if(gameState===currentPlayer){
-				endgameResult.innerText = `PLAYER ${currentPlayer.no} WIN!`;
+				endgameResult.innerText = `${currentPlayer.mark} WIN!`;
 				setTimeout(()=>{endgameModal.showModal()}, 1500);
 			}
 			else if (gameState===0){
@@ -239,11 +239,13 @@ const GameRender = (() => {
 		//show current player's mark when hover
 		element.addEventListener('mouseenter', ()=>{
 			if(game.getCurrentBoard().getCellValue(row, col)===0){
+				element.style['color']=currentPlayer.color;
 				element.innerText= currentPlayer.mark;
 			}
 		})
 		element.addEventListener('mouseleave', ()=>{
 			if(game.getCurrentBoard().getCellValue(row, col)===0){
+				element.style['color']="";
 				element.innerText= '';
 			}
 		})
@@ -265,16 +267,18 @@ const GameRender = (() => {
 
 	//update a cell when place mark
 	const UpdateCell = (row, col) => {
-		currentPlayer = game.getCurrentPlayer();
 		const markedElement = document.querySelector(`.cell-${row}-${col}`);
-		currentPlayerContainer.innerText = `${currentPlayer.no}'S TURN`;
-		markedElement.innerHTML = game.getCurrentBoard().getCellValue(row, col);
+		markedElement.innerHTML = game.getCurrentBoard().getCellValue(row, col)
+		markedElement.style['color']=currentPlayer.color;
+		//switch player
+		currentPlayer = game.getCurrentPlayer();
+		currentPlayerContainer.innerText = `${currentPlayer.mark}'S TURN`;
 	};
 
 	const createNewGame = ()=>{
 		game.resetGame();
 		currentPlayer = game.getCurrentPlayer();
-		currentPlayerContainer.innerText = `${currentPlayer.no}'S TURN`;
+		currentPlayerContainer.innerText = `${currentPlayer.mark}'S TURN`;
 		document.querySelectorAll(".board div").forEach((item) => {
 			item.innerText = '';
 		});
