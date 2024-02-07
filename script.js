@@ -223,16 +223,21 @@ const GameRender = (() => {
 		let element = document.createElement("div");
 		element.classList.add(`cell-${row}-${col}`);
 		element.innerText = 0;
+
+		//event when a player places a mark
 		element.addEventListener("click", () => {
 			let gameState = game.currentTurn(row, col, currentPlayer);
 			console.log('gameState :>> ', gameState);
+
+			//update the board after a player places a mark
 			UpdateCell(row, col);
+
 			if(gameState===currentPlayer){
-				endgameResult.innerText = `Player ${currentPlayer.no} Win`;
+				endgameResult.innerText = `PLAYER ${currentPlayer.no} WIN!`;
 				setTimeout(()=>{endgameModal.showModal()}, 1500);
 			}
 			else if (gameState===0){
-				endgameResult.innerText = `Tie`;
+				endgameResult.innerText = `TIE!`;
 				setTimeout(()=>{endgameModal.showModal()}, 1500);
 			}
 		});
@@ -256,7 +261,7 @@ const GameRender = (() => {
 	const UpdateCell = (row, col) => {
 		currentPlayer = game.getCurrentPlayer();
 		const markedElement = document.querySelector(`.cell-${row}-${col}`);
-		currentPlayerContainer.innerText = currentPlayer.no;
+		currentPlayerContainer.innerText = `${currentPlayer.no}'S TURN`;
 		markedElement.innerHTML = game.getCurrentBoard().getCellValue(row, col);
 	};
 
@@ -266,7 +271,7 @@ const GameRender = (() => {
 		document.querySelectorAll(".board div").forEach((item) => {
 			item.innerHTML = 0;
 		});
-		currentPlayerContainer.innerText = currentPlayer.no;
+		currentPlayerContainer.innerText = `${currentPlayer.no}'S TURN`;
 		console.log(game.getCurrentBoard());
 	}
 
