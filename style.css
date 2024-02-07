@@ -6,7 +6,7 @@
 body {
     display: flex;
     justify-content: center;
-    color: #638889;
+    color: #43766C;
     font-family: 'Cute Font', sans-serif;
     font-size: 2rem;
     height:100vh;
@@ -23,6 +23,7 @@ h1{
 button{
     padding: 0.5rem 1.5rem;
     font-size: 1rem;
+    color: #43766C;
 }
 
 .main{ 
@@ -75,10 +76,7 @@ button{
     background-color: #43766C;
     border-radius: 10px;
     transition: 0.3s;
-}
-
-.board>div:hover {
-    background-color: #9DBC98;
+    color: white;
 }
 
 .current-player {

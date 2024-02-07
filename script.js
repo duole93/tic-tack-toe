@@ -112,8 +112,8 @@ function Cell() {
 //game control
 const GameHandler = function () {
 	const board = Gameboard();
-	const player1 = { no: 1, mark: 1 };
-	const player2 = { no: 2, mark: 2 };
+	const player1 = { no: 1, mark: 'X' };
+	const player2 = { no: 2, mark: 'O' };
 	let currentPlayer = player1;
 	let winner = 0;
 	let remainMoves=9;
@@ -180,10 +180,6 @@ const GameHandler = function () {
 
 //Display Game
 const GameRender = (() => {
-
-	
-
-
 	const game = GameHandler();
 	let currentPlayer = game.getCurrentPlayer();
 	
@@ -222,7 +218,6 @@ const GameRender = (() => {
 	const CellElement = (row, col) => {
 		let element = document.createElement("div");
 		element.classList.add(`cell-${row}-${col}`);
-		element.innerText = 0;
 
 		//event when a player places a mark
 		element.addEventListener("click", () => {
@@ -241,6 +236,17 @@ const GameRender = (() => {
 				setTimeout(()=>{endgameModal.showModal()}, 1500);
 			}
 		});
+		//show current player's mark when hover
+		element.addEventListener('mouseenter', ()=>{
+			if(game.getCurrentBoard().getCellValue(row, col)===0){
+				element.innerText= currentPlayer.mark;
+			}
+		})
+		element.addEventListener('mouseleave', ()=>{
+			if(game.getCurrentBoard().getCellValue(row, col)===0){
+				element.innerText= '';
+			}
+		})
 		return {
 			element,
 		};
@@ -268,10 +274,10 @@ const GameRender = (() => {
 	const createNewGame = ()=>{
 		game.resetGame();
 		currentPlayer = game.getCurrentPlayer();
-		document.querySelectorAll(".board div").forEach((item) => {
-			item.innerHTML = 0;
-		});
 		currentPlayerContainer.innerText = `${currentPlayer.no}'S TURN`;
+		document.querySelectorAll(".board div").forEach((item) => {
+			item.innerText = '';
+		});
 		console.log(game.getCurrentBoard());
 	}
 
